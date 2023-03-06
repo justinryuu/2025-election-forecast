@@ -10,4 +10,11 @@ If elections can be accurately forecast by using non-representative datasets, po
 
 ## Data
 
-$$Y^{Lib}_i=log\left(\frac{p_i}{1-p_i}\right) = \beta_0 + \phi_g + \epsilon_h$$
+### Survey Data
+ 
+Analysis was performed on the publicly available 2019 Canadian Election Study (CES) data, which is collected annually and includes questions about past voting behaviour, as well as many demographic factors. The survey was administered over the phone during the campaign and post-election period, and sampled Canadian citizens and permanent residents over 18 years of age. Detailed sampling techniques can be found in the “2019 Canadian Election Study - Online Survey Technical Report and Codebook”. The original, uncleaned data contains 4,021 observations of 273 variables.
+
+In the survey data's original state, each variable is named after its question code (q1, q2, p1, p2, etc). Thus, the cleaning process began with identifying important variables and modifying variable names for convenience and clarity. Each of the selected variables have been renamed to better describe the information being collected.
+The table below displays the important variables from the survey data after the names
+have been changed.
+
