@@ -38,3 +38,6 @@ The newly cleaned data set contains 1923 observations and 9 variables. Below are
 *vote_liberal*: Whether or not the individual is likely to vote Liberal. Binary variable.\
 *vote_conservative*: Whether or not the individual is likely to vote Conservative. Binary variable.\
 *vote_other*: Whether or not the individual is likely to vote NDP, Bloc, Green or other parties. Binary variable.
+
+One additional thing to note that is that while Gender is not limited to female and male in the survey, there is only 1 observation out of 1923 observations for "Other" in the *gender* variable. Thus, that observation was excluded as there is an insufficient sample size to draw any meaningful conclusions for those in the "Other" category.
+
