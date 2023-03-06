@@ -118,5 +118,103 @@ numbers were retrieved from the Address Register provided by Statistics Canada.
 The data itself contains 20,602 observations of 81 variables. 
 
 ```
+census_og_data <- read.csv("C:/Users/justin/Downloads/gss_clean.csv")
 
+census_data <- census_og_data %>%
+  select(age, sex, province, income_family, education)
+census_data = na.omit(census_data)
+census_data <- subset(census_data, census_data$age > 17) 
+census_data <- census_data %>% mutate(age = floor(age),
+                                      age_category = case_when(
+                                        (age > 17 & age < 30) ~ "18-29",
+                                        (age > 29 & age < 45) ~ "30-44",
+                                        (age > 44 & age < 65) ~ "45-64",
+                                        (age > 64) ~ "65+"),
+                                      education = case_when(
+                                        (education == "High school diploma or a high school equivalency certificate" |
+                                         education == "Trade certificate or diploma" |
+                                         education == "Less than high school diploma or its equivalent" |
+                                         education == "College, CEGEP or other non-university certificate or di..." |
+                                         education == "University certificate or diploma below the bachelor's level") ~
+                                          "No completed post-secondary education",
+                                        (education == "Bachelor's degree (e.g. B.A., B.Sc., LL.B.)" | 
+                                         education == "University certificate, diploma or degree above the bach...") ~
+                                          "Completed post-secondary education"))
+
+census_data <- census_data %>%
+  select(age_category, sex, province, income_family, education)
+
+census_data$income_family <- factor(census_data$income_family,
+                                    levels = c("Less than $25,000",
+                                                             "$25,000 to $49,999",
+                                                             "$50,000 to $74,999",
+                                                             "$75,000 to $99,999",
+                                                             "$100,000 to $ 124,999",
+                                                             "$125,000 and more"))
+census_data$age_category <- factor(census_data$age_category,
+                                   levels = c("18-29",
+                                              "30-44",
+                                              "45-64",
+                                              "65+"))
+census_data$education <- factor(census_data$education,
+                                levels = c("No completed post-secondary education",
+                                           "Completed post-secondary education"))
 ```
+
+The cleaning process begins with selecting the variables that are relevant to our report.
+Following, all observations with an N/A response in any of the variables are removed 
+as well as observations where the individual is a minor (under the age of 18). The 
+age variable is then rounded down in order to obtain a whole number. Subsequently, 
+a new variable is created, which separates the observations into 4 age groups. 
+Lastly, while the education variable provided by the census data offers in detail 
+the highest certificate, diploma or degree achieved by the individual, that variable
+is updated in order to only display whether the individual has achieved a Bachelor's degree.
+The newly cleaned data set contains 19978 observations and 5 variables.
+Below are the final variables that originate from the census data.
+
+*age_category*: Age bracket of the individual. Categorical variable.\
+*gender*: Gender of the individual. Categorical variable.\
+*province*: "Current Canadian province the individual resides in. Categorical variable.\
+*income_family*: The total household income bracket of the individual, before taxes. Categorical variable.\
+*education*: Whether or not the individual has completed post-secondary education. Binary variable.
+
+## Exploratory Data Analysis
+
+  The survey data was relatively representative of the general Canadian population, estimated by the 2016 census information.  Figure 1 compares the age distribution of census and survey respondents, which are both approximately normally distributed and centered around 50 years of age. Figure 2 compares the relative proportion of respondents of each gender. There was a slightly higher proportion of female respondents in the census (54%) compared to a higher proportion of males in the survey (58%). Figure 3 shows the distribution of the provinces respondents resided in at the time of the survey. Notably, respondents from Ontario appear underrepresented in the survey (27% in the census and 21% in the survey), while respondents from British Columbia appear over represented (12% in the census and 19% in the survey). The income and education distributions of survey respondents appears to be right-skewed compared to the census data, with a higher proportion of survey respondents having a family income of greater than $125,000 and having completed a minimum of a Bachelor’s degree (Figure 4). Detailed information about respondent demographics of survey and census takers, as well as the comparative distributions of respondent education levels, can be found in the Appendix.  While survey data appears to be generally representative of the Canadian electorate, there are demographic differences that, if left uncorrected, could lead to election forecasting that would be biased and ungeneralizable to the Canadian population at large. [This is supported by political science research](https://www.thecanadianencyclopedia.ca/en/article/electoral-behaviour) that suggests that demographic variables such as gender, age, geography, education and income are influential determinants of political ideology.
+
+Preliminary data analysis revealed trends to be considered when selecting variables to be included in the election model. Several demographic variables appeared to influence voting ideology. Specifically, a greater proportion of Conservative voters were males (70%), compared to Liberal voters (56%). Similarily,  Conservative voters far outweighed Liberal voters in Alberta, Manitoba and Saskatchewan. Conservatives voters comprised a greater proportion of voters in the 65+ years of age category, voters earning an annual family income of greater than $125,000, and voters who had not completed any post-secondary education. This exploratory data analysis indicates that demographic factors may be predictors of political ideology, and vote, and should be included when modeling voting behaviour. 
+
+<p align="center">
+  <img src="images/1.png" width="80%" height="80%">
+</p>
+
+<p align="center">
+  <img src="images/2.png" width="80%" height="80%">
+</p>
+
+<p align="center">
+  <img src="images/3.png" width="80%" height="80%">
+</p>
+
+## Methods
+
+In this section, the survey data will be used to build three regression models, each with the goal of predicting whether or not a given voter will vote for a given Canadian political party. The estimates of these models will then be adjusted by post-stratification on census data in order to predict the overall popular vote of the 2025 Canadian federal election.
+
+All analysis for this report was programmed using R version 4.0.2. using packages OpenIntro, tidyverse, Knitr, cesR & lme4.
+
+### Model Specifics
+
+Given that the objective of this analysis is to predict the overall outcome of the 2025 Canadian federal election, we choose to approximate this result by estimating the probabilities that a given voter votes for given parties. A voter can either choose to vote for a party, or to not vote for the party. Thus, there are two distinct scenarios for each party. A logistic regression is suited for this, as its dependent variable is binary. Knowing this, we create several logistic regression models for the various parties.
+
+In addition, while we expect certain groupings of voters to vote differently, the effects of each group can vary, and are expected to be different between each group. We are not particularly interested in inferring how these different effects affect the outcome, rather we are interested in accounting for the influence of these effects in our models. Thus, we do so by incorporating random effects for each group in our models, resulting in two levels of parameters, and hence have a multilevel model.
+
+We make the following assumptions in all of the models:\
+  1. The response variable is binary (two possible responses).\
+  2. The observations must be independent of one another.\
+  3. The log of the odds ratio must be a linear function with respect to fixed effects.\
+  4. Random effects follow a normal distribution with mean 0 and an estimated variance parameter.
+  
+We have already established that the response variable in each model has only two possible outcomes, verifying assumption 1. While there is little reason for observations to be correlated, it can be argued that family members can influence each others' political opinions. Acknowledging this potential caveat, this analysis will be carried out under assumption 2 being true. Regarding assumption 3, our models do not actually contain fixed effects, so this assumption holds. Assumption 4 holds true as there is little reason why any of the included random effects would significantly deviate from zero. We verify that this assumption is true in each regression model.
+
+All three models were selected through backwards stepwise selection. Each model selection process began with a 'full model' containing all predictors under consideration. For each model, this included age category, gender, province, household income bracket, and education. These variables were initially selected because they could all be argued to have an influence a voter's vote. The next step was to remove the least significant predictor, determined by the highest p-value, then reevaluate the model. This step was repeated until all remaining predictors were statistically significant at the 0.05 level. The models that resulted from this process are described below.
+
