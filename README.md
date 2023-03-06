@@ -1,6 +1,6 @@
 # 2025 Election Forecast using Non-representative Survey Data
 
-## Introduction
+# Introduction
 
 Election forecasting is an important tool that can be used to predict the outcome of an electoral race ahead of the polling date. Information about which candidate is favoured to win an election is incredibly valuable to many stakeholders, including media outlets, campaign managers, and most cruicially, to voters themseleves. Creating polls that sample a representative segment of the target population is often the greatest logistical barrier to accurate and unbiased election forecasting, and requires considerable time and effort.
 
@@ -8,10 +8,76 @@ In this report, we hypothesize that an representative election forecast can be g
 
 If elections can be accurately forecast by using non-representative datasets, poll predictions can be made more quickly, and with less resources required. This is important because election information is very time sensitive, so the ability to generate nuanced and timely election predictions is of high value, from both a practical and academic perspective.
 
-## Data
+# Data
+
+## Data Cleaning
+```
+survey_data <- 
+  survey_og_data %>% 
+  mutate(vote_liberal = ifelse(q11==1, 1, 0),
+         vote_conservative = ifelse(q11==2, 1, 0),
+         vote_other = ifelse(q11==3|q11==4|q11==5|q11==6|q11==7, 1, 0),
+         gender = case_when(
+           q3==1 ~ "Male",
+           q3==2 ~ "Female"),
+         current_province = case_when(
+           q4==1 ~ "Newfoundland and Labrador",
+           q4==2 ~ "Prince Edward Island",
+           q4==3 ~ "Nova Scotia",
+           q4==4 ~ "New Brunswick",
+           q4==5 ~ "Quebec",
+           q4==6 ~ "Ontario",
+           q4==7 ~ "Manitoba",
+           q4==8 ~ "Saskatchewan",
+           q4==9 ~ "Alberta",
+           q4==10 ~ "British Columbia"),
+         party_vote = case_when(
+           q11==1 ~ "Liberal (Grits)",
+           q11==2 ~ "Conservatives (Tory, PCs, Conservative Party of Canada)",
+           q11==3 ~ "Other",
+           q11==4 ~ "Other",
+           q11==5 ~ "Other",
+           q11==6 ~ "Other",
+           q11==7 ~ "Other"),
+         income_family = case_when(
+           (q69 < 24999 & q69 > -1) ~ "Less than $25,000",
+           (q69 < 49999 & q69 > 25000) ~ "$25,000 to $49,999",
+           (q69 < 74999 & q69 > 50000) ~ "$50,000 to $74,999",
+           (q69 < 99999 & q69 > 75000) ~ "$75,000 to $99,999",
+           (q69 < 124999 & q69 > 100000) ~ "$100,000 to $ 124,999",
+           (q69 > 125000) ~ "$125,000 and more"),
+         age_category = case_when(
+           (age > 17 & age < 30) ~ "18-29",
+           (age > 29 & age < 45) ~ "30-44",
+           (age > 44 & age < 65) ~ "45-64",
+           (age > 64) ~ "65+"),
+         education = case_when(
+           (q61 == 1 | q61 == 2 | q61 == 3 | q61 == 4 | q61 == 5 | q61 == 6 | q61 == 7 | q61 == 8) ~ "No completed post-secondary education",
+           (q61 == 9 | q61 == 10 | q61 == 11) ~ "Completed post-secondary education")
+        ) %>% 
+  select(gender, current_province, party_vote, income_family, age_category, 
+         education, vote_liberal, vote_conservative, vote_other)
+survey_data = na.omit(survey_data)
+
+survey_data$income_family <- factor(survey_data$income_family,
+                                    levels = c("Less than $25,000",
+                                                             "$25,000 to $49,999",
+                                                             "$50,000 to $74,999",
+                                                             "$75,000 to $99,999",
+                                                             "$100,000 to $ 124,999",
+                                                             "$125,000 and more"))
+survey_data$age_category <- factor(survey_data$age_category,
+                                   levels = c("18-29",
+                                              "30-44",
+                                              "45-64",
+                                              "65+"))
+survey_data$education <- factor(survey_data$education,
+                                levels = c("No completed post-secondary education",
+                                           "Completed post-secondary education"))
+```
 
 ### Survey Data
- 
+
 Analysis was performed on the publicly available [2019 Canadian Election Study (CES) data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8RHLG1), which is collected annually and includes questions about past voting behaviour, as well as many demographic factors. The survey was administered over the phone during the campaign and post-election period, and sampled Canadian citizens and permanent residents over 18 years of age. Detailed sampling techniques can be found in the “2019 Canadian Election Study - Online Survey Technical Report and Codebook”. The original, uncleaned data contains 4,021 observations of 273 variables.
 
 In the survey data's original state, each variable is named after its question code (q1, q2, p1, p2, etc). Thus, the cleaning process began with identifying important variables and modifying variable names for convenience and clarity. Each of the selected variables have been renamed to better describe the information being collected.
@@ -50,3 +116,7 @@ It targeted non-institutionalized people above the age of 15 that resided in a C
 province. The data collection process was done through telephone calls, in which telephone 
 numbers were retrieved from the Address Register provided by Statistics Canada. 
 The data itself contains 20,602 observations of 81 variables. 
+
+```
+
+```
