@@ -41,3 +41,12 @@ The newly cleaned data set contains 1923 observations and 9 variables. Below are
 
 One additional thing to note that is that while Gender is not limited to female and male in the survey, there is only 1 observation out of 1923 observations for "Other" in the *gender* variable. Thus, that observation was excluded as there is an insufficient sample size to draw any meaningful conclusions for those in the "Other" category.
 
+### Census Data
+[The data used as the census data comes from the 2017 General Social Survey (GSS)](https://sda-artsci-utoronto-ca.myaccess.library.utoronto.ca/legacy_sda/dli2/gss/gss31/gss31/more_doc/index.htm) that was conducted
+between February to November 2017. The goal of the survey was to gather and view the changes
+in the quality of life of Canadians as well as provide a general census on current
+issues.
+It targeted non-institutionalized people above the age of 15 that resided in a Canadian
+province. The data collection process was done through telephone calls, in which telephone 
+numbers were retrieved from the Address Register provided by Statistics Canada. 
+The data itself contains 20,602 observations of 81 variables. 
