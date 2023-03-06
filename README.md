@@ -29,12 +29,12 @@ degree or not. Following that, 3 binary variables are created based on *party_vo
 
 The newly cleaned data set contains 1923 observations and 9 variables. Below are the final cleaned variables from the survey data.
 
-*age_category*: Age bracket of the individual. Categorical variable.
-*gender*: Gender of the individual. Categorical variable.
-*current_province*: "Current Canadian province the individual resides in. Categorical variable.
-*party_vote*: The political party that the individual claimed they would vote for. Categorical variable.
-*income_family*: The total household income bracket of the individual, before taxes. Categorical variable.
-*education*: Whether or not the individual has completed post-secondary education. Binary variable.
-*vote_liberal*: Whether or not the individual is likely to vote Liberal. Binary variable.
-*vote_conservative*: Whether or not the individual is likely to vote Conservative. Binary variable.
+*age_category*: Age bracket of the individual. Categorical variable.\
+*gender*: Gender of the individual. Categorical variable.\
+*current_province*: "Current Canadian province the individual resides in. Categorical variable.\
+*party_vote*: The political party that the individual claimed they would vote for. Categorical variable.\
+*income_family*: The total household income bracket of the individual, before taxes. Categorical variable.\
+*education*: Whether or not the individual has completed post-secondary education. Binary variable.\
+*vote_liberal*: Whether or not the individual is likely to vote Liberal. Binary variable.\
+*vote_conservative*: Whether or not the individual is likely to vote Conservative. Binary variable.\
 *vote_other*: Whether or not the individual is likely to vote NDP, Bloc, Green or other parties. Binary variable.
