@@ -12,9 +12,18 @@ If elections can be accurately forecast by using non-representative datasets, po
 
 ### Survey Data
  
-Analysis was performed on the publicly available 2019 Canadian Election Study (CES) data, which is collected annually and includes questions about past voting behaviour, as well as many demographic factors. The survey was administered over the phone during the campaign and post-election period, and sampled Canadian citizens and permanent residents over 18 years of age. Detailed sampling techniques can be found in the “2019 Canadian Election Study - Online Survey Technical Report and Codebook”. The original, uncleaned data contains 4,021 observations of 273 variables.
+Analysis was performed on the publicly available [2019 Canadian Election Study (CES) data](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8RHLG1), which is collected annually and includes questions about past voting behaviour, as well as many demographic factors. The survey was administered over the phone during the campaign and post-election period, and sampled Canadian citizens and permanent residents over 18 years of age. Detailed sampling techniques can be found in the “2019 Canadian Election Study - Online Survey Technical Report and Codebook”. The original, uncleaned data contains 4,021 observations of 273 variables.
 
 In the survey data's original state, each variable is named after its question code (q1, q2, p1, p2, etc). Thus, the cleaning process began with identifying important variables and modifying variable names for convenience and clarity. Each of the selected variables have been renamed to better describe the information being collected.
-The table below displays the important variables from the survey data after the names
-have been changed.
+The table below displays the important variables from the survey data after the names have been changed.
+
+Furthermore, the responses to each question in the survey data are coded as numbers, each representing a specific answer that can be found in the survey data documentation. This is not ideal for this report, so the responses for variables *gender*, *current_province* and *party_vote* are modified
+in order to directly display the individual's response as its entire a string representation.
+
+In addition, the income family variable is modified so that it is a categorical value
+with 6 categories that correspond with the family income categories in the cleaned
+census data. A new variable is also created in order to display and categorize the age 
+of the respondent into one of four age groups. As well, the education variable is 
+modified in order to only show whether the individual has achieved a Bachelor's 
+degree or not. Following that, 3 binary variables are created based on *party_vote* to indicate an individual's likely votes for the Liberal, Conservative and 'Other' parties. Lastly, any observations with a N/A in any variable is removed. 
 
