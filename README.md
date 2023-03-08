@@ -185,15 +185,15 @@ Below are the final variables that originate from the census data.
 Preliminary data analysis revealed trends to be considered when selecting variables to be included in the election model. Several demographic variables appeared to influence voting ideology. Specifically, a greater proportion of Conservative voters were males (70%), compared to Liberal voters (56%). Similarily,  Conservative voters far outweighed Liberal voters in Alberta, Manitoba and Saskatchewan. Conservatives voters comprised a greater proportion of voters in the 65+ years of age category, voters earning an annual family income of greater than $125,000, and voters who had not completed any post-secondary education. This exploratory data analysis indicates that demographic factors may be predictors of political ideology, and vote, and should be included when modeling voting behaviour. 
 
 <p align="center">
-  <img src="images/1.png" width="80%" height="80%">
+  <img src="images/1.png" width="60%" height="60%">
 </p>
 
 <p align="center">
-  <img src="images/2.png" width="80%" height="80%">
+  <img src="images/2.png" width="60%" height="60%">
 </p>
 
 <p align="center">
-  <img src="images/3.png" width="80%" height="80%">
+  <img src="images/3.png" width="60%" height="60%">
 </p>
 
 ## Methods
@@ -218,64 +218,44 @@ We have already established that the response variable in each model has only tw
 
 All three models were selected through backwards stepwise selection. Each model selection process began with a 'full model' containing all predictors under consideration. For each model, this included age category, gender, province, household income bracket, and education. These variables were initially selected because they could all be argued to have an influence a voter's vote. The next step was to remove the least significant predictor, determined by the highest p-value, then reevaluate the model. This step was repeated until all remaining predictors were statistically significant at the 0.05 level. The models that resulted from this process are described below.
 
-*Model 1*: a multilevel logistic regression model, used to model the probability that a given voter will vote for the Liberal Party of Canada. The response variables that are used are the voter's province of residence and level of education, both of which are recorded as categorical variables. The model is as follows:
-
-$$Y^{Lib}_i=log\left(\frac{p_i}{1-p_i}\right) = \beta_0 + \phi_g + \epsilon_h$$
-
-$Y^{Lib}_i$ is an indicator variable recording if the $i^{th}$ voter voted for the Liberal Party (1) or another party (0), and is represented by the log-odds of $p^{Lib}_i$, where $p^{Lib}_i$ is the true probability that the $i^{th}$ voter voted for the Liberal Party.
-$\beta_0$ is the intercept, representing the mean log-odds of voting for the Liberal Party across all voters.
-$\phi_g$ and $\epsilon_h$ are random effects, each representing the deviation in the log-odds intercept for province $g$ and education level $h$, after controlling for all other covariates in the model.
-
-*Model 2*: a multilevel logistic regression model, used to model the probability that a given voter will vote for the Conservative Party of Canada. The response variables that are used are the voter's gender, province of residence, household income bracket, and level of education, all of which are recorded as categorical variables. The model is as follows:
-
-$$Y^{Cons}_i=log\left(\frac{p^{Cons}_i}{1-p^{Cons}_i}\right) = \beta_0 + \gamma_g + \phi_h + \delta_j + \epsilon_k$$
-
-$Y^{Cons}_i$ is an indicator variable recording if the $i^{th}$ voter voted for the Conservative Party (1) or another party (0), and is represented by the log-odds of $p^{Cons}_i$, where $p^{Cons}_i$ is the true probability that the $i^{th}$ voter voted for the Conservative Party.
-$\beta_0$ is the intercept, representing the mean log-odds of voting for the Conservative Party across all voters.
-$\gamma_g$, $\phi_h$, $\delta_j$ and $\epsilon_h$ are all random effects, each representing the deviation in the log-odds intercept for gender $g$, province $h$, income bracket $j$, and education level $k$, after controlling for all other covariates in the model.
-
-*Model 3*: a multilevel logistic regression model, used to model the probability that a given voter will vote for a party other than the Liberal Party of Canada or the Conservative Party of Canada. The response variables that are used are the voter's age category, province of residence, and household income bracket, all of which are recorded as categorical variables. The model is as follows:
-
-$$Y^{other}_i=log\left(\frac{p^{other}_i}{1-p^{other}_i}\right) = \beta_0 + \alpha_g + \phi_h + \delta_j$$
-
-$Y^{other}_i$ is an indicator variable recording if the $i^{th}$ voter voted for a non-Liberal & non-Conservative party (1) or voted for either the Liberal Party/Conservative Party (0), and is represented by the log-odds of $p^{other}_i$, where $p^{other}_i$ is the true probability that the $i^{th}$ voter voted for a party other than the Liberal Party or Conservative Party.
-$\beta_0$ is the intercept, representing the mean log-odds of voting for a non-Liberal & non-Conservative party across all voters.
-$\alpha_g$, $\phi_h$, and $\delta_j$ are all random effects, each representing the deviation in the log-odds intercept for age_category $g$, province $h$, and income bracket $j$, after controlling for all other covariates in the model.
+<p align="center">
+  <img src="images/models.png" width="80%" height="80%">
+</p>
 
 ```{r, include=FALSE}
 
 library(lme4)
 
-# Model 1 - Liberal Vote Multilevel Logistic Regression
+ Model 1 - Liberal Vote Multilevel Logistic Regression
 
-# Beginning with the full model
+ Beginning with the full model
 lib_model_full <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 
-# Try removing one predictor
+ Try removing one predictor
 lib_model_1a <- lme4::glmer(vote_liberal ~ (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 lib_model_1b <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 lib_model_1c <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 lib_model_1d <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
 lib_model_1e <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 
-# Removed gender, try removing one more predictor
+ Removed gender, try removing one more predictor
 lib_model_2a <- lme4::glmer(vote_liberal ~ (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 lib_model_2c <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 lib_model_2d <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province) + (1|education), family=binomial, data=survey_data)
 lib_model_2e <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 
-# Removed income_family, try removing one more predictor
+ Removed income_family, try removing one more predictor
 lib_model_3a <- lme4::glmer(vote_liberal ~ (1|current_province) + (1|education), family=binomial, data=survey_data)
 lib_model_3c <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|education), family=binomial, data=survey_data)
 lib_model_3e <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province), family=binomial, data=survey_data)
 
-# Removed age_category, try removing one more predictor
+ Removed age_category, try removing one more predictor
 lib_model_4c <- lme4::glmer(vote_liberal ~ (1|education), family=binomial, data=survey_data)
 lib_model_4e <- lme4::glmer(vote_liberal ~ (1|current_province), family=binomial, data=survey_data)
 ```
 
 ```{r, include=FALSE}
-# Testing models against each other
+ Testing models against each other
 anova(lib_model_full, lib_model_1a, test = "Chisq")
 anova(lib_model_full, lib_model_1b, test = "Chisq")
 anova(lib_model_full, lib_model_1c, test = "Chisq")
@@ -299,19 +279,19 @@ anova(lib_model_full, lib_model_3a, test = "Chisq")
 
 ```{r, include=FALSE}
 
-# Model 2 - Conservative Vote Multilevel Logistic Regression
+ Model 2 - Conservative Vote Multilevel Logistic Regression
 
-# Beginning with the full model
+ Beginning with the full model
 con_model_full <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 
-# Try removing one predictor
+ Try removing one predictor
 con_model_1a <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 con_model_1b <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 con_model_1c <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 con_model_1d <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
 con_model_1e <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 
-# Removed age_category, try removing one more predictor
+ Removed age_category, try removing one more predictor
 con_model_2b <- lme4::glmer(vote_conservative ~ (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 con_model_2c <- lme4::glmer(vote_conservative ~ (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 con_model_2d <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
@@ -319,7 +299,7 @@ con_model_2e <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province
 ```
 
 ```{r, include=FALSE}
-# Testing models against each other
+Testing models against each other
 anova(con_model_full, con_model_1a, test = "Chisq")
 anova(con_model_full, con_model_1b, test = "Chisq")
 anova(con_model_full, con_model_1c, test = "Chisq")
@@ -336,32 +316,32 @@ anova(con_model_full, con_model_1a, test = "Chisq")
 
 ```{r, include=FALSE}
 
-# Model 3 - 'Other' Vote Multilevel Logistic Regression
+ Model 3 - 'Other' Vote Multilevel Logistic Regression
 
-# Beginning with the full model
+ Beginning with the full model
 other_model_full <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 
-# Try removing one predictor
+Try removing one predictor
 other_model_1a <- lme4::glmer(vote_other ~ (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 other_model_1b <- lme4::glmer(vote_other ~ (1|age_category) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 other_model_1c <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
 other_model_1d <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
 other_model_1e <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 
-# Removed education, try removing one more predictor
+ Removed education, try removing one more predictor
 other_model_2a <- lme4::glmer(vote_other ~ (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 other_model_2b <- lme4::glmer(vote_other ~ (1|age_category) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 other_model_2c <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|income_family), family=binomial, data=survey_data)
 other_model_2d <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province), family=binomial, data=survey_data)
 
-# Removed gender, try removing one more predictor
+ Removed gender, try removing one more predictor
 other_model_3a <- lme4::glmer(vote_other ~ (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 other_model_3c <- lme4::glmer(vote_other ~ (1|age_category) + (1|income_family), family=binomial, data=survey_data)
 other_model_3d <- lme4::glmer(vote_other ~ (1|age_category) + (1|current_province), family=binomial, data=survey_data)
 ```
 
 ```{r, include=FALSE}
-# Testing models against each other
+Testing models against each other
 anova(other_model_full, other_model_1a, test = "Chisq")
 anova(other_model_full, other_model_1b, test = "Chisq")
 anova(other_model_full, other_model_1c, test = "Chisq")
@@ -383,7 +363,7 @@ anova(other_model_full, other_model_2b, test = "Chisq")
 ## Post-Stratification 
 
 ```{r, include=FALSE}
-#poststratification cells
+poststratification cells
 census_data <- census_data %>% 
   group_by(sex,province,income_family,education,age_category) %>% 
   summarise(N_cell = n())
@@ -392,7 +372,7 @@ census_data$prop_cell <- census_data$N_cell/total_cells
 ```
   
 ```{r include=FALSE}
-#data cleaning for poststratifiction
+data cleaning for poststratifiction
 for (i in 1:nrow(census_data)){
   if (census_data$income_family[i]=="$100,000 to $ 124,999"){
     census_data$income_family[i] <- "$100,000 to $124,999"}
@@ -403,16 +383,16 @@ for (i in 1:nrow(census_data)){
 colnames(census_data)[1]<- "gender"
 colnames(census_data)[2]<- "current_province"
 census_data <- na.omit(census_data)
-#liberal prediction
+liberal prediction
 census_data$lib_estimate <- exp((lib_model_3a %>% predict(census_data)))/(1+exp((lib_model_full %>% predict(census_data))))
-#conservative prediction
+conservative prediction
 census_data$con_estimate <- exp((con_model_1a %>% predict(census_data)))/(1+exp((con_model_full %>% predict(census_data))))
-#other prediction
+other prediction
 census_data$other_estimate <- exp((other_model_2b %>% predict(census_data)))/(1+exp((other_model_full %>% predict(census_data))))
 ```  
 
 ```{r include=FALSE}
-#final poststratification calculation and weights
+final poststratification calculation and weights
 census_data$lib_predict_prop = census_data$lib_estimate*census_data$prop_cell
 lib_result <- sum(census_data$lib_predict_prop)
 census_data$con_predict_prop = census_data$con_estimate*census_data$prop_cell
@@ -460,7 +440,7 @@ observations from all 3 Canadian territories. This only allows us to predict bas
 Canadian province inhabitants, rather than Canadian citizens as a whole. This could skew
 our results and predictions. Finally, the results are conditional on all individuals having an equal probability of actually voting. In reality, not everyone votes during the election, and certain demographics see disproportionate voter turnouts. In a future analysis we may estimate the turnout for various groups to produce more robust results.
 
-While the aim of this report was to predict the popular vote for the Conservative, Liberal and other parties in the election, and concluded that the Conservatives will once again win the popular vote, it is unclear from this result alone whether the Conservatives will take government. In the 2019 as well as the 2021 snap election, Justin Trudeau's Liberal party held a minority government^[Cecco, L. (2021.) Canada election result: Trudeau wins third term after early vote gamble.] in part due to having lost the popular vote on both occasions, yet held on to government nonetheless. Given that Canadian minority governments do not have a history of longevity,^[Azzi, S and Kwavnick, D. (2019). Minority Governments in Canada.] it is possible to consider that Trudeau's trend in holding minority will not continue over the next election, however it becomes difficult to enter this discussion without some degree of speculation. The outcome of the 2025 election will ultimately have to be decided through a combination of the number of seats won by the Conservative and Liberal parties as well as the popular vote, as the popular vote alone is not quite enough to accurately predict the various states of government to be held by either party. Follow up studies incorporating geographical information and riding area could extend prediction from solely the popular vote to include final election results.
+While the aim of this report was to predict the popular vote for the Conservative, Liberal and other parties in the election, and concluded that the Conservatives will once again win the popular vote, it is unclear from this result alone whether the Conservatives will take government. In the 2019 as well as the 2021 snap election, Justin Trudeau's Liberal party held a minority government in part due to having lost the popular vote on both occasions, yet held on to government nonetheless. [Given that Canadian minority governments do not have a history of longevity,](https://www.thecanadianencyclopedia.ca/en/article/minority-government) it is possible to consider that Trudeau's trend in holding minority will not continue over the next election, however it becomes difficult to enter this discussion without some degree of speculation. The outcome of the 2025 election will ultimately have to be decided through a combination of the number of seats won by the Conservative and Liberal parties as well as the popular vote, as the popular vote alone is not quite enough to accurately predict the various states of government to be held by either party. Follow up studies incorporating geographical information and riding area could extend prediction from solely the popular vote to include final election results.
 
 ## Bibliography
 
