@@ -219,7 +219,7 @@ We have already established that the response variable in each model has only tw
 All three models were selected through backwards stepwise selection. Each model selection process began with a 'full model' containing all predictors under consideration. For each model, this included age category, gender, province, household income bracket, and education. These variables were initially selected because they could all be argued to have an influence a voter's vote. The next step was to remove the least significant predictor, determined by the highest p-value, then reevaluate the model. This step was repeated until all remaining predictors were statistically significant at the 0.05 level. The models that resulted from this process are described below.
 
 <p align="center">
-  <img src="images/models.png" width="80%" height="80%">
+  <img src="images/models.png" width="100%" height="100%">
 </p>
 
 
@@ -392,7 +392,7 @@ Whereas the process of stratification involves separating the population into di
 For our analysis, therefore, it is instead suitable to use poststratification, where observations are divided into separate demographics (strata) after randomly sampling from the population, and used to estimate the population parameter as the sum of individual stratum means, weighted by their stratum weights.. The mathematical representation of this process is as follows:
 
 <p align="center">
-  <img src="images/math.png" width="80%" height="80%">
+  <img src="images/math.png" width="100%" height="100%">
 </p>
  
 We will be using this method in order to estimate the proportion of voters that would vote Liberal, Conservative, and Other, applying the three respective models we have built in order to calculate our cell-level estimates. We will then aggregate these estimates by their respective cell weights, yielding our final predictions for the proportion of votes for each party.
