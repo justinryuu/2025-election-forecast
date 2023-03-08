@@ -241,3 +241,141 @@ $$Y^{other}_i=log\left(\frac{p^{other}_i}{1-p^{other}_i}\right) = \beta_0 + \alp
 $Y^{other}_i$ is an indicator variable recording if the $i^{th}$ voter voted for a non-Liberal & non-Conservative party (1) or voted for either the Liberal Party/Conservative Party (0), and is represented by the log-odds of $p^{other}_i$, where $p^{other}_i$ is the true probability that the $i^{th}$ voter voted for a party other than the Liberal Party or Conservative Party.
 $\beta_0$ is the intercept, representing the mean log-odds of voting for a non-Liberal & non-Conservative party across all voters.
 $\alpha_g$, $\phi_h$, and $\delta_j$ are all random effects, each representing the deviation in the log-odds intercept for age_category $g$, province $h$, and income bracket $j$, after controlling for all other covariates in the model.
+
+```{r, include=FALSE}
+
+library(lme4)
+
+# Model 1 - Liberal Vote Multilevel Logistic Regression
+
+# Beginning with the full model
+lib_model_full <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+
+# Try removing one predictor
+lib_model_1a <- lme4::glmer(vote_liberal ~ (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+lib_model_1b <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+lib_model_1c <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+lib_model_1d <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
+lib_model_1e <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+
+# Removed gender, try removing one more predictor
+lib_model_2a <- lme4::glmer(vote_liberal ~ (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+lib_model_2c <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+lib_model_2d <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province) + (1|education), family=binomial, data=survey_data)
+lib_model_2e <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+
+# Removed income_family, try removing one more predictor
+lib_model_3a <- lme4::glmer(vote_liberal ~ (1|current_province) + (1|education), family=binomial, data=survey_data)
+lib_model_3c <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|education), family=binomial, data=survey_data)
+lib_model_3e <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_province), family=binomial, data=survey_data)
+
+# Removed age_category, try removing one more predictor
+lib_model_4c <- lme4::glmer(vote_liberal ~ (1|education), family=binomial, data=survey_data)
+lib_model_4e <- lme4::glmer(vote_liberal ~ (1|current_province), family=binomial, data=survey_data)
+```
+
+```{r, include=FALSE}
+# Testing models against each other
+anova(lib_model_full, lib_model_1a, test = "Chisq")
+anova(lib_model_full, lib_model_1b, test = "Chisq")
+anova(lib_model_full, lib_model_1c, test = "Chisq")
+anova(lib_model_full, lib_model_1d, test = "Chisq")
+anova(lib_model_full, lib_model_1e, test = "Chisq")
+
+anova(lib_model_1b, lib_model_2a, test = "Chisq")
+anova(lib_model_1b, lib_model_2c, test = "Chisq")
+anova(lib_model_1b, lib_model_2d, test = "Chisq")
+anova(lib_model_1b, lib_model_2e, test = "Chisq")
+
+anova(lib_model_2d, lib_model_3a, test = "Chisq")
+anova(lib_model_2d, lib_model_3c, test = "Chisq")
+anova(lib_model_2d, lib_model_3e, test = "Chisq")
+
+anova(lib_model_3a, lib_model_4c, test = "Chisq")
+anova(lib_model_3a, lib_model_4e, test = "Chisq")
+
+anova(lib_model_full, lib_model_3a, test = "Chisq")
+```
+
+```{r, include=FALSE}
+
+# Model 2 - Conservative Vote Multilevel Logistic Regression
+
+# Beginning with the full model
+con_model_full <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+
+# Try removing one predictor
+con_model_1a <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+con_model_1b <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+con_model_1c <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+con_model_1d <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
+con_model_1e <- lme4::glmer(vote_conservative ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+
+# Removed age_category, try removing one more predictor
+con_model_2b <- lme4::glmer(vote_conservative ~ (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+con_model_2c <- lme4::glmer(vote_conservative ~ (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+con_model_2d <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
+con_model_2e <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+```
+
+```{r, include=FALSE}
+# Testing models against each other
+anova(con_model_full, con_model_1a, test = "Chisq")
+anova(con_model_full, con_model_1b, test = "Chisq")
+anova(con_model_full, con_model_1c, test = "Chisq")
+anova(con_model_full, con_model_1d, test = "Chisq")
+anova(con_model_full, con_model_1e, test = "Chisq")
+
+anova(con_model_1a, con_model_2b, test = "Chisq")
+anova(con_model_1a, con_model_2c, test = "Chisq")
+anova(con_model_1a, con_model_2d, test = "Chisq")
+anova(con_model_1a, con_model_2e, test = "Chisq")
+
+anova(con_model_full, con_model_1a, test = "Chisq")
+```
+
+```{r, include=FALSE}
+
+# Model 3 - 'Other' Vote Multilevel Logistic Regression
+
+# Beginning with the full model
+other_model_full <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+
+# Try removing one predictor
+other_model_1a <- lme4::glmer(vote_other ~ (1|gender) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+other_model_1b <- lme4::glmer(vote_other ~ (1|age_category) + (1|current_province) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+other_model_1c <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|income_family) + (1|education), family=binomial, data=survey_data)
+other_model_1d <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
+other_model_1e <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+
+# Removed education, try removing one more predictor
+other_model_2a <- lme4::glmer(vote_other ~ (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+other_model_2b <- lme4::glmer(vote_other ~ (1|age_category) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+other_model_2c <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|income_family), family=binomial, data=survey_data)
+other_model_2d <- lme4::glmer(vote_other ~ (1|age_category) + (1|gender) + (1|current_province), family=binomial, data=survey_data)
+
+# Removed gender, try removing one more predictor
+other_model_3a <- lme4::glmer(vote_other ~ (1|current_province) + (1|income_family), family=binomial, data=survey_data)
+other_model_3c <- lme4::glmer(vote_other ~ (1|age_category) + (1|income_family), family=binomial, data=survey_data)
+other_model_3d <- lme4::glmer(vote_other ~ (1|age_category) + (1|current_province), family=binomial, data=survey_data)
+```
+
+```{r, include=FALSE}
+# Testing models against each other
+anova(other_model_full, other_model_1a, test = "Chisq")
+anova(other_model_full, other_model_1b, test = "Chisq")
+anova(other_model_full, other_model_1c, test = "Chisq")
+anova(other_model_full, other_model_1d, test = "Chisq")
+anova(other_model_full, other_model_1e, test = "Chisq")
+
+anova(other_model_1e, other_model_2a, test = "Chisq")
+anova(other_model_1e, other_model_2b, test = "Chisq")
+anova(other_model_1e, other_model_2c, test = "Chisq")
+anova(other_model_1e, other_model_2d, test = "Chisq")
+
+anova(other_model_2b, other_model_3a, test = "Chisq")
+anova(other_model_2b, other_model_3c, test = "Chisq")
+anova(other_model_2b, other_model_3d, test = "Chisq")
+
+anova(other_model_full, other_model_2b, test = "Chisq")
+```
