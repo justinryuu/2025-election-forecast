@@ -1,5 +1,9 @@
 # 2025 Election Forecast using Non-representative Survey Data
 
+<p align="center">
+  <img src="images/hal10125313.jpg" width="100%" height="100%">
+</p>
+
 # Introduction
 
 Election forecasting is an important tool that can be used to predict the outcome of an electoral race ahead of the polling date. Information about which candidate is favoured to win an election is incredibly valuable to many stakeholders, including media outlets, campaign managers, and most cruicially, to voters themseleves. Creating polls that sample a representative segment of the target population is often the greatest logistical barrier to accurate and unbiased election forecasting, and requires considerable time and effort.
