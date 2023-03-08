@@ -118,7 +118,7 @@ numbers were retrieved from the Address Register provided by Statistics Canada.
 The data itself contains 20,602 observations of 81 variables. 
 
 ```
-census_og_data <- read.csv("C:/Users/justin/Downloads/gss_clean.csv")
+census_og_data <- read.csv("gss_clean.csv")
 
 census_data <- census_og_data %>%
   select(age, sex, province, income_family, education)
