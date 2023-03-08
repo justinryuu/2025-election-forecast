@@ -405,11 +405,9 @@ Whereas the process of stratification involves separating the population into di
 
 For our analysis, therefore, it is instead suitable to use poststratification, where observations are divided into separate demographics (strata) after randomly sampling from the population, and used to estimate the population parameter as the sum of individual stratum means, weighted by their stratum weights.. The mathematical representation of this process is as follows:
 
-$$\hat{y}=\frac{\sum N_j \hat{y}_j}{\sum N_j}$$
-
-Where $\hat{y}$ is the estimate of the population parameter,
-$\hat{y}_j$ is the estimate in each cell (or stratum),
-and $N_j$ is the population size of the $j^{th}$ cell. 
+<p align="center">
+  <img src="images/math.png" width="80%" height="80%">
+</p>
  
 We will be using this method in order to estimate the proportion of voters that would vote Liberal, Conservative, and Other, applying the three respective models we have built in order to calculate our cell-level estimates. We will then aggregate these estimates by their respective cell weights, yielding our final predictions for the proportion of votes for each party.
 
