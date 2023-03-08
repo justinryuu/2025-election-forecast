@@ -222,8 +222,7 @@ All three models were selected through backwards stepwise selection. Each model 
   <img src="images/models.png" width="80%" height="80%">
 </p>
 
-```{r, include=FALSE}
-
+```
 library(lme4)
 
  Model 1 - Liberal Vote Multilevel Logistic Regression
@@ -254,8 +253,9 @@ lib_model_4c <- lme4::glmer(vote_liberal ~ (1|education), family=binomial, data=
 lib_model_4e <- lme4::glmer(vote_liberal ~ (1|current_province), family=binomial, data=survey_data)
 ```
 
-```{r, include=FALSE}
- Testing models against each other
+
+```
+Testing models against each other
 anova(lib_model_full, lib_model_1a, test = "Chisq")
 anova(lib_model_full, lib_model_1b, test = "Chisq")
 anova(lib_model_full, lib_model_1c, test = "Chisq")
