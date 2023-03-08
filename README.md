@@ -379,3 +379,125 @@ anova(other_model_2b, other_model_3d, test = "Chisq")
 
 anova(other_model_full, other_model_2b, test = "Chisq")
 ```
+
+## Post-Stratification 
+
+```{r, include=FALSE}
+#poststratification cells
+census_data <- census_data %>% 
+  group_by(sex,province,income_family,education,age_category) %>% 
+  summarise(N_cell = n())
+total_cells <- sum(census_data$N_cell)
+census_data$prop_cell <- census_data$N_cell/total_cells
+```
+  
+```{r include=FALSE}
+#data cleaning for poststratifiction
+for (i in 1:nrow(census_data)){
+  if (census_data$income_family[i]=="$100,000 to $ 124,999"){
+    census_data$income_family[i] <- "$100,000 to $124,999"}
+}
+```
+
+```{r, include=FALSE}
+colnames(census_data)[1]<- "gender"
+colnames(census_data)[2]<- "current_province"
+census_data <- na.omit(census_data)
+#liberal prediction
+census_data$lib_estimate <- exp((lib_model_3a %>% predict(census_data)))/(1+exp((lib_model_full %>% predict(census_data))))
+#conservative prediction
+census_data$con_estimate <- exp((con_model_1a %>% predict(census_data)))/(1+exp((con_model_full %>% predict(census_data))))
+#other prediction
+census_data$other_estimate <- exp((other_model_2b %>% predict(census_data)))/(1+exp((other_model_full %>% predict(census_data))))
+```  
+
+```{r include=FALSE}
+#final poststratification calculation and weights
+census_data$lib_predict_prop = census_data$lib_estimate*census_data$prop_cell
+lib_result <- sum(census_data$lib_predict_prop)
+census_data$con_predict_prop = census_data$con_estimate*census_data$prop_cell
+con_result <- sum(census_data$con_predict_prop)
+census_data$other_predict_prop = census_data$other_estimate*census_data$prop_cell
+other_result <- sum(census_data$other_predict_prop)
+```  
+
+Whereas the process of stratification involves separating the population into different identifiable subgroups before sampling, it can be difficult to do so when the method of data collection does not make these subgroups immediately known to the surveyor. The data gathered by the General Social Survey was collected through the use of telephone calls, a method which would make stratification in this sense difficult to implement. In this case, the sample characteristics (gender, age, income, etc.) would not be known until after the phone call, and hence sampling, is already complete, so we would not be able to stratify this data.
+
+For our analysis, therefore, it is instead suitable to use poststratification, where observations are divided into separate demographics (strata) after randomly sampling from the population, and used to estimate the population parameter as the sum of individual stratum means, weighted by their stratum weights.. The mathematical representation of this process is as follows:
+
+$$\hat{y}=\frac{\sum N_j \hat{y}_j}{\sum N_j}$$
+
+Where $\hat{y}$ is the estimate of the population parameter,
+$\hat{y}_j$ is the estimate in each cell (or stratum),
+and $N_j$ is the population size of the $j^{th}$ cell. 
+ 
+We will be using this method in order to estimate the proportion of voters that would vote Liberal, Conservative, and Other, applying the three respective models we have built in order to calculate our cell-level estimates. We will then aggregate these estimates by their respective cell weights, yielding our final predictions for the proportion of votes for each party.
+
+## Results 
+Our poststratification calculations yielded the result that approximately 30.62% of the vote would be Conservative, 28.1% would be Liberal, and 26.67% of voters would vote for other parties. his result is reasonable given previous historical data on Canadian federal elections; [In 2019 the Liberal party obtained 33.1% of the vote and Conservatives 34.4%, with 32.1% going to the other parties in the election.](https://newsinteractives.cbc.ca/elections/federal/2019/results/) In the previous 2021 election, [32.6% went to the Liberals, 33.7% to Conservatives, and 33.6% to other parties.](https://newsinteractives.cbc.ca/elections/federal/2021/results/) 
+
+Our predictions as the result of our models and poststratification similarly suggest a percentage difference of approximately two percentage points between the predicted Liberal and Conservative voting proportions. Our prediction for the proportion of the vote for other parties also trails behind both the Liberal and Conservative figures by a few percent, as was the case in 2019. Although the Canadian Federal Election has always been a historical tug-of-war between the red and blue parties, our analysis in this case predicts that the majority vote for the 2025 election will be secured by the Conservatives by a similarly fine margin as years prior. This prediction also reflects similar results to historical data as the Conservative party has edged out a higher proportion of the vote against the Liberals in both the 2019 and 2021 elections.
+
+## Conclusions
+Through our analysis of the 2019 Canadian Election Study phone survey data, we were able to build three multilevel logistic regression models to predict the proportion of votes for Conservatives, Liberals, and other parties respectively in the upcoming 2025 federal election. We then applied these models to the 2017 General Social Survey census data through the use of poststratification, where we divided the census data into distinct demographic cells and used the models to estimate the population-level voting proportions as the sum of individually weighted cell means. The use of poststratification techniques allowed us to create a representative estimate of Canadian voting proportions despite the small and initially non-representative data from the GSS survey. 
+
+This analysis yielded the predictions that the 2025 Canadian Federal Election would see 30.62% of the vote going to the Conservatives, 28.1% to the Liberals, and 26.67% to other parties, suggesting a majority vote for the Conservatives by approximately two percentage points. These predictions reflect the previous results of the more recent 2019 and 2021 Canadian elections, once again indicating a close struggle between the Conservatives and Liberals and a voting proportion lower than both parties for the other parties in the election combined. Our analysis thus predicts that the Conservative party is likely to have the greatest proportion of the overall vote in the 2025 Canadian Federal Election.
+
+## Discussion and Model Weaknesses
+
+There are a few weaknesses in our report that can be noted. Firstly, the comparison
+between gender and sex. While the more appropriate variable to be used in our report
+would be gender, rather than sex, the census data does not collect any demographic
+information regarding gender, while the survey data does not collect any information
+regarding sex. As there was only a singular observation for individuals who identified
+as "Other" in the survey data, we believed that the data would not be skewed as much by comparing the
+two as equals. However, it can also be noted that individual's that answered according
+to their identified gender in the survey data, could have a different response for their 
+biological sex in the census data. Next, the census data collects only observations from individuals
+that live in a Canadian province, excluding territories. While the survey data collects
+observations from both provinces and territories, it can be noted that there are 0
+observations from all 3 Canadian territories. This only allows us to predict based on
+Canadian province inhabitants, rather than Canadian citizens as a whole. This could skew
+our results and predictions. Finally, the results are conditional on all individuals having an equal probability of actually voting. In reality, not everyone votes during the election, and certain demographics see disproportionate voter turnouts. In a future analysis we may estimate the turnout for various groups to produce more robust results.
+
+While the aim of this report was to predict the popular vote for the Conservative, Liberal and other parties in the election, and concluded that the Conservatives will once again win the popular vote, it is unclear from this result alone whether the Conservatives will take government. In the 2019 as well as the 2021 snap election, Justin Trudeau's Liberal party held a minority government^[Cecco, L. (2021.) Canada election result: Trudeau wins third term after early vote gamble.] in part due to having lost the popular vote on both occasions, yet held on to government nonetheless. Given that Canadian minority governments do not have a history of longevity,^[Azzi, S and Kwavnick, D. (2019). Minority Governments in Canada.] it is possible to consider that Trudeau's trend in holding minority will not continue over the next election, however it becomes difficult to enter this discussion without some degree of speculation. The outcome of the 2025 election will ultimately have to be decided through a combination of the number of seats won by the Conservative and Liberal parties as well as the popular vote, as the popular vote alone is not quite enough to accurately predict the various states of government to be held by either party. Follow up studies incorporating geographical information and riding area could extend prediction from solely the popular vote to include final election results.
+
+## Bibliography
+
+1. Grolemund, G. (2014, July 16) *Introduction to R Markdown*. RStudio. [https://rmarkdown.rstudio.com/articles_intro.html](https://rmarkdown.rstudio.com/articles_intro.html). (Last Accessed: January 15, 2021) 
+
+2. Dekking, F. M., et al. (2005) *A Modern Introduction to Probability and Statistics: Understanding why and how.* Springer Science & Business Media.
+
+3. Allaire, J.J., et. el. *References: Introduction to R Markdown*. RStudio. [https://rmarkdown.rstudio.com/docs/](https://rmarkdown.rstudio.com/docs/). (Last Accessed: January 15, 2021) 
+
+4. Wang, W., et el. (2014) *Forecasting elections with non-representative polls.* International Journal of Forecasting.
+[https://dx.doi.org/10.1016/j.ijforecast.2014.06.001](https://dx.doi.org/10.1016/j.ijforecast.2014.06.001). (Last Accessed: November 30, 2022)
+
+5. Stephenson, L., et. el. (2020, August 17) *Canadian Election Study, 2019, Phone Survey*. CES EEC. [https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8RHLG1](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8RHLG1). (Last Accessed: November 28, 2022)
+
+6. Beaupré, P. (2020, April) *Cycle 31 : Families Public Use Microdata File Documentation and User’s Guide*.
+Statistics Canada. [https://sda-artsci-utoronto-ca.myaccess.library.utoronto.ca/legacy_sda/dli2/gss/gss31/gss31/more_doc/index.htm](https://sda-artsci-utoronto-ca.myaccess.library.utoronto.ca/legacy_sda/dli2/gss/gss31/gss31/more_doc/index.htm). (Last Accessed: November 28, 2022)
+
+7. Ma, Clayton. (2006, February 7) *Voting Behaviour in Canada*. The Canadian Encyclopedia. [https://www.thecanadianencyclopedia.ca/en/article/electoral-behaviour](https://www.thecanadianencyclopedia.ca/en/article/electoral-behaviour). (Last Accessed: November 30, 2022)
+
+8. Glasgow, G. (2005) *Stratified Sampling Types.* Science Direct. [https://www.sciencedirect.com/topics/mathematics/poststratification](https://www.sciencedirect.com/topics/mathematics/poststratification) (Last Accessed: November 29, 2022)
+  
+9. Caetano, S-J. (2022) *Week 7 Lecture: Multilevel Regression & Poststratification.* University of Toronto.
+
+10. CBC News. (2019) *Federal election 2019 live results.* Canada Votes 2019. [https://newsinteractives.cbc.ca/elections/federal/2019/results/](https://newsinteractives.cbc.ca/elections/federal/2019/results/) (Last Accessed: November 29, 2022)
+
+11. CBC News. (2021) *Federal election 2021 live results.* Canada Votes 2021. [https://newsinteractives.cbc.ca/elections/federal/2021/results/](https://newsinteractives.cbc.ca/elections/federal/2021/results/) (Last Accessed: November 29, 2022)
+
+12. Cecco, L. (2021) *Canada election result: Trudeau wins third term after early vote gamble.* The Guardian. [https://www.theguardian.com/world/2021/sep/21/canada-election-result-trudeau-forecast-to-win-third-term-after-early-vote-gamble](https://www.theguardian.com/world/2021/sep/21/canada-election-result-trudeau-forecast-to-win-third-term-after-early-vote-gamble) (Last Accessed: November 30, 2022)
+
+13. Azzi, S & Kwavnick, D. (2019) *Minority Governments in Canada.* The Canadian Encyclopedia. [https://www.thecanadianencyclopedia.ca/en/article/minority-government](https://www.thecanadianencyclopedia.ca/en/article/minority-government) (Last Accessed: November 30, 2022)
+
+14. Çetinkaya-Rundel, M. (2022, September 1) *OpenIntro Version 2.4.0* [https://cran.r-project.org/web/packages/openintro/index.html](https://cran.r-project.org/web/packages/openintro/index.html) (Last Accessed: November 30, 2022)
+
+15. Wickham et al., (2019). *Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686.* [https://doi.org/10.21105/joss.01686](https://doi.org/10.21105/joss.01686) (Last Accessed: November 30, 2022)
+
+16. Xie, Y. (2013) Knitr. [https://yihui.org/knitr/](https://yihui.org/knitr/) (Last Accessed: November 30, 2022)
+
+17. Hodgetts, P.A. (2021). *CesR: Access the Canadian Election Study Datasets.* [https://cran.r-project.org/web/packages/cesR/index.html](https://cran.r-project.org/web/packages/cesR/index.html)  (Last Accessed: November 30, 2022)
+
+18. Bates, D. et al. (2015). *Fitting Linear Mixed-Effects Models Using lme4. Journal of Statistical Software, 67(1), 1-48.* [doi:10.18637/jss.v067.i01](doi:10.18637/jss.v067.i01) (Last Accessed: November 30, 2022)
