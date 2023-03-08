@@ -222,7 +222,7 @@ All three models were selected through backwards stepwise selection. Each model 
   <img src="images/models.png" width="80%" height="80%">
 </p>
 
-\
+
 
 ```
 library(lme4)
@@ -254,7 +254,7 @@ lib_model_3e <- lme4::glmer(vote_liberal ~ (1|age_category) + (1|current_provinc
 lib_model_4c <- lme4::glmer(vote_liberal ~ (1|education), family=binomial, data=survey_data)
 lib_model_4e <- lme4::glmer(vote_liberal ~ (1|current_province), family=binomial, data=survey_data)
 ```
-\
+
 
 ```
 Testing models against each other
@@ -278,7 +278,8 @@ anova(lib_model_3a, lib_model_4e, test = "Chisq")
 
 anova(lib_model_full, lib_model_3a, test = "Chisq")
 ```
-\
+
+
 ```{r, include=FALSE}
 
  Model 2 - Conservative Vote Multilevel Logistic Regression
@@ -299,7 +300,8 @@ con_model_2c <- lme4::glmer(vote_conservative ~ (1|gender) + (1|income_family) +
 con_model_2d <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province) + (1|education), family=binomial, data=survey_data)
 con_model_2e <- lme4::glmer(vote_conservative ~ (1|gender) + (1|current_province) + (1|income_family), family=binomial, data=survey_data)
 ```
-\
+
+
 ```{r, include=FALSE}
 Testing models against each other
 anova(con_model_full, con_model_1a, test = "Chisq")
@@ -315,7 +317,8 @@ anova(con_model_1a, con_model_2e, test = "Chisq")
 
 anova(con_model_full, con_model_1a, test = "Chisq")
 ```
-\
+
+
 ```{r, include=FALSE}
 
  Model 3 - 'Other' Vote Multilevel Logistic Regression
@@ -341,7 +344,8 @@ other_model_3a <- lme4::glmer(vote_other ~ (1|current_province) + (1|income_fami
 other_model_3c <- lme4::glmer(vote_other ~ (1|age_category) + (1|income_family), family=binomial, data=survey_data)
 other_model_3d <- lme4::glmer(vote_other ~ (1|age_category) + (1|current_province), family=binomial, data=survey_data)
 ```
-\
+
+
 ```{r, include=FALSE}
 Testing models against each other
 anova(other_model_full, other_model_1a, test = "Chisq")
@@ -361,9 +365,11 @@ anova(other_model_2b, other_model_3d, test = "Chisq")
 
 anova(other_model_full, other_model_2b, test = "Chisq")
 ```
-\
+
+
 ## Post-Stratification 
-\
+
+
 ```{r, include=FALSE}
 poststratification cells
 census_data <- census_data %>% 
@@ -372,7 +378,8 @@ census_data <- census_data %>%
 total_cells <- sum(census_data$N_cell)
 census_data$prop_cell <- census_data$N_cell/total_cells
 ```
-\
+
+
 ```{r include=FALSE}
 data cleaning for poststratifiction
 for (i in 1:nrow(census_data)){
@@ -380,7 +387,8 @@ for (i in 1:nrow(census_data)){
     census_data$income_family[i] <- "$100,000 to $124,999"}
 }
 ```
-\
+
+
 ```{r, include=FALSE}
 colnames(census_data)[1]<- "gender"
 colnames(census_data)[2]<- "current_province"
@@ -392,7 +400,8 @@ census_data$con_estimate <- exp((con_model_1a %>% predict(census_data)))/(1+exp(
 other prediction
 census_data$other_estimate <- exp((other_model_2b %>% predict(census_data)))/(1+exp((other_model_full %>% predict(census_data))))
 ```  
-\
+
+
 ```{r include=FALSE}
 final poststratification calculation and weights
 census_data$lib_predict_prop = census_data$lib_estimate*census_data$prop_cell
@@ -402,7 +411,8 @@ con_result <- sum(census_data$con_predict_prop)
 census_data$other_predict_prop = census_data$other_estimate*census_data$prop_cell
 other_result <- sum(census_data$other_predict_prop)
 ```  
-\
+
+
 Whereas the process of stratification involves separating the population into different identifiable subgroups before sampling, it can be difficult to do so when the method of data collection does not make these subgroups immediately known to the surveyor. The data gathered by the General Social Survey was collected through the use of telephone calls, a method which would make stratification in this sense difficult to implement. In this case, the sample characteristics (gender, age, income, etc.) would not be known until after the phone call, and hence sampling, is already complete, so we would not be able to stratify this data.
 
 For our analysis, therefore, it is instead suitable to use poststratification, where observations are divided into separate demographics (strata) after randomly sampling from the population, and used to estimate the population parameter as the sum of individual stratum means, weighted by their stratum weights.. The mathematical representation of this process is as follows:
