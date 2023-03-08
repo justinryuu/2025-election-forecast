@@ -218,3 +218,26 @@ We have already established that the response variable in each model has only tw
 
 All three models were selected through backwards stepwise selection. Each model selection process began with a 'full model' containing all predictors under consideration. For each model, this included age category, gender, province, household income bracket, and education. These variables were initially selected because they could all be argued to have an influence a voter's vote. The next step was to remove the least significant predictor, determined by the highest p-value, then reevaluate the model. This step was repeated until all remaining predictors were statistically significant at the 0.05 level. The models that resulted from this process are described below.
 
+*Model 1*: a multilevel logistic regression model, used to model the probability that a given voter will vote for the Liberal Party of Canada. The response variables that are used are the voter's province of residence and level of education, both of which are recorded as categorical variables. The model is as follows:
+
+$$Y^{Lib}_i=log\left(\frac{p_i}{1-p_i}\right) = \beta_0 + \phi_g + \epsilon_h$$
+
+$Y^{Lib}_i$ is an indicator variable recording if the $i^{th}$ voter voted for the Liberal Party (1) or another party (0), and is represented by the log-odds of $p^{Lib}_i$, where $p^{Lib}_i$ is the true probability that the $i^{th}$ voter voted for the Liberal Party.
+$\beta_0$ is the intercept, representing the mean log-odds of voting for the Liberal Party across all voters.
+$\phi_g$ and $\epsilon_h$ are random effects, each representing the deviation in the log-odds intercept for province $g$ and education level $h$, after controlling for all other covariates in the model.
+
+*Model 2*: a multilevel logistic regression model, used to model the probability that a given voter will vote for the Conservative Party of Canada. The response variables that are used are the voter's gender, province of residence, household income bracket, and level of education, all of which are recorded as categorical variables. The model is as follows:
+
+$$Y^{Cons}_i=log\left(\frac{p^{Cons}_i}{1-p^{Cons}_i}\right) = \beta_0 + \gamma_g + \phi_h + \delta_j + \epsilon_k$$
+
+$Y^{Cons}_i$ is an indicator variable recording if the $i^{th}$ voter voted for the Conservative Party (1) or another party (0), and is represented by the log-odds of $p^{Cons}_i$, where $p^{Cons}_i$ is the true probability that the $i^{th}$ voter voted for the Conservative Party.
+$\beta_0$ is the intercept, representing the mean log-odds of voting for the Conservative Party across all voters.
+$\gamma_g$, $\phi_h$, $\delta_j$ and $\epsilon_h$ are all random effects, each representing the deviation in the log-odds intercept for gender $g$, province $h$, income bracket $j$, and education level $k$, after controlling for all other covariates in the model.
+
+*Model 3*: a multilevel logistic regression model, used to model the probability that a given voter will vote for a party other than the Liberal Party of Canada or the Conservative Party of Canada. The response variables that are used are the voter's age category, province of residence, and household income bracket, all of which are recorded as categorical variables. The model is as follows:
+
+$$Y^{other}_i=log\left(\frac{p^{other}_i}{1-p^{other}_i}\right) = \beta_0 + \alpha_g + \phi_h + \delta_j$$
+
+$Y^{other}_i$ is an indicator variable recording if the $i^{th}$ voter voted for a non-Liberal & non-Conservative party (1) or voted for either the Liberal Party/Conservative Party (0), and is represented by the log-odds of $p^{other}_i$, where $p^{other}_i$ is the true probability that the $i^{th}$ voter voted for a party other than the Liberal Party or Conservative Party.
+$\beta_0$ is the intercept, representing the mean log-odds of voting for a non-Liberal & non-Conservative party across all voters.
+$\alpha_g$, $\phi_h$, and $\delta_j$ are all random effects, each representing the deviation in the log-odds intercept for age_category $g$, province $h$, and income bracket $j$, after controlling for all other covariates in the model.
